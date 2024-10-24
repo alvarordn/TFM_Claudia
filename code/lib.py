@@ -1,5 +1,6 @@
 # Importing required libraries
 import numpy as np
+from scipy.optimize import fsolve
 
 
 
@@ -27,32 +28,61 @@ class grid:
             pros_list.append(prosumer(item['id'], item['Node'], item['P'], item['Q'], nodes))
         return pros_list
 
-    def generate_Y(self):
-        self.Y = np.zeros((len(self.nodes), len(self.nodes)), dtype = complex)
+    def assign_x(self, x):
+        index = 0
         for node in self.nodes:
-            for line in node.lines:
-                for line_con in line.nodes:
-                    if node.ref != line_con.ref:
-                        Z = complex(np.real(line.Z), np.imag(line.Z))
-                        self.Y[node.ref, line_con.ref] = -1/Z
-        for index in range(self.Y.shape[0]):
-            self.Y[index, index] = -np.sum(self.Y[index,:]) 
-        self.Yrx = np.zeros((len(self.nodes)*2, len(self.nodes)*2))
-        for index_x in range(self.Y.shape[0]):
-            for index_y in range(self.Y.shape[1]):
-                self.Yrx[index_x*2, index_y*2] = np.real(self.Y[index_x, index_y])
-                self.Yrx[index_x*2, index_y*2 + 1] = - np.imag(self.Y[index_x, index_y])
-                self.Yrx[index_x*2 + 1, index_y*2] = np.imag(self.Y[index_x, index_y])
-                self.Yrx[index_x*2 + 1, index_y*2 + 1] = np.real(self.Y[index_x, index_y])
+            node.U = complex(x[index], x[index + 1])
+            index += 2
+            
+    def compute_I(self):
+        for line in self.lines:
+            line.I = (line.nodes[0].U - line.nodes[1].U)/line.Z
+        for node in self.nodes: # +: inyeccion, -: demanda
+            node.I = np.conj(np.sum([complex(p.P, p.Q) for p in node.pros])/node.U)
+    
+    def compute_res(self):
+        residual = []
+        for node in self.nodes:
+            residual.append(node.check())
+        residual_rx = []
+        for item in residual:
+            residual_rx.append(np.real(item))
+            residual_rx.append(np.imag(item))
+        return residual_rx
+    
+    def test_x(self, x):
+        self.assign_x(x)
+        self.compute_I()
+        res = self.compute_res()
+        return res
         
+    def solve_pf(self):
+        x0 = [1,0]*len(self.nodes)
+        sol, infodict, ier, mesg = fsolve(self.test_x, x0, full_output = True)
+        print(mesg)
+        return sol, infodict, ier, mesg
 
 class node:
     def __init__(self, ref, slack):
         self.ref = ref   
         self.slack = slack        
         self.lines = list()
+        self.U = complex(1, 0)
         self.pros = []
     
+    def check(self):
+        if self.slack:
+            residual = self.U - complex(1, 0)
+        else:
+            I_agregada = 0
+            I_agregada += self.I
+            for line in self.lines:
+                if line.nodes[0] == self:
+                    I_agregada -= line.I
+                else:
+                    I_agregada += line.I
+            residual = I_agregada
+        return residual
         
 class line:
     def __init__(self, ref, From, To, R, X, nodes_list):
@@ -64,6 +94,9 @@ class line:
                       next((item for item in nodes_list if item.ref == To), None)]   
         self.nodes[0].lines.append(self)
         self.nodes[1].lines.append(self)
+        
+    
+            
   
 class prosumer:
     def __init__(self, ref, node_id, P, Q, nodes_list):
