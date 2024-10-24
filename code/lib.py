@@ -27,6 +27,25 @@ class grid:
             pros_list.append(prosumer(item['id'], item['Node'], item['P'], item['Q'], nodes))
         return pros_list
 
+    def generate_Y(self):
+        self.Y = np.zeros((len(self.nodes), len(self.nodes)), dtype = complex)
+        for node in self.nodes:
+            for line in node.lines:
+                for line_con in line.nodes:
+                    if node.ref != line_con.ref:
+                        Z = complex(np.real(line.Z), np.imag(line.Z))
+                        self.Y[node.ref, line_con.ref] = -1/Z
+        for index in range(self.Y.shape[0]):
+            self.Y[index, index] = -np.sum(self.Y[index,:]) 
+        self.Yrx = np.zeros((len(self.nodes)*2, len(self.nodes)*2))
+        for index_x in range(self.Y.shape[0]):
+            for index_y in range(self.Y.shape[1]):
+                self.Yrx[index_x*2, index_y*2] = np.real(self.Y[index_x, index_y])
+                self.Yrx[index_x*2, index_y*2 + 1] = - np.imag(self.Y[index_x, index_y])
+                self.Yrx[index_x*2 + 1, index_y*2] = np.imag(self.Y[index_x, index_y])
+                self.Yrx[index_x*2 + 1, index_y*2 + 1] = np.real(self.Y[index_x, index_y])
+        
+
 class node:
     def __init__(self, ref, slack):
         self.ref = ref   
