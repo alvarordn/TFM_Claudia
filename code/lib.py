@@ -19,7 +19,7 @@ class grid:
     def add_lines(self, lines, nodes):
         lines_list = list()
         for item in lines:
-            lines_list.append(line(item['id'], item['From'], item['To'], item['R'], item['X'], nodes))
+            lines_list.append(line(item['id'], item['From'], item['To'], item['Z_p'], nodes))
         return lines_list
         
     def add_pros(self, pros, nodes):
@@ -85,11 +85,11 @@ class node:
         return residual
         
 class line:
-    def __init__(self, ref, From, To, R, X, nodes_list):
-        self.ref = ref     
-        self.Z = complex(R, X)
-        self.G, self.B = np.real(1/self.Z), -np.imag(1/self.Z)
-        self.Y = 1/self.Z
+    def __init__(self, ref, From, To, Z_p, nodes_list):
+        self.ref = ref 
+        self.Z_p = Z_p # Sino guarod Z_p aquí es un argumento del constructor, pero no lo  guardo como atributo de la clase.
+        self.G, self.B = np.real(1/self.Z_p), -np.imag(1/self.Z_p)
+        self.Y = 1/self.Z_p
         self.nodes = [next((item for item in nodes_list if item.ref == From), None), 
                       next((item for item in nodes_list if item.ref == To), None)]   
         self.nodes[0].lines.append(self)
