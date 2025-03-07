@@ -102,7 +102,7 @@ class prosumer:
     def __init__(self, ref, node_id, P, Q, nodes_list):
         self.ref = ref
         self.P = P
-        self.Q = Q        
+        self.Q = Q  
         self.node = next((item for item in nodes_list if item.ref == node_id), None)
         self.node.pros.append(self)
         

@@ -49,9 +49,27 @@ Z_pUG3 = np.array([
 
 
 S_R1=200000 #VA
+S_R11= 15000
+S_R15=52000
+S_R16=55000
+S_R17=35000
+S_R18=47000
+
+S_I2=100000
+
+S_C1=120000
+S_C12=20000
+S_C13=20000
+S_C14=25000
+S_C17=25000
+S_C18=8000
+S_C19=16000
+S_C20=8000
+
 # Nodes
 Nodes = [
     {'id': 'X1', 'slack': True},
+    {'id': 'R1', 'slack': False},
     {'id': 'R2', 'slack': False},
     {'id': 'R3', 'slack': False},
     {'id': 'R4', 'slack': False},
@@ -94,67 +112,69 @@ Nodes = [
 
 # Lines
 Lines = [
-    {'id': 0, 'From': 'X1', 'To': 'C2', 'Z_p': Z_pOH1 * L_a},
-    {'id': 1, 'From': 'X1', 'To': 'C3', 'Z_p': Z_pOH1 * L_a},
-    {'id': 2, 'From': 'X1', 'To': 'C4', 'Z_p': Z_pOH1 * L_a},
-    {'id': 3, 'From': 'X1', 'To': 'C5', 'Z_p': Z_pOH1 * L_a},
-    {'id': 4, 'From': 'X1', 'To': 'C6', 'Z_p': Z_pOH1 * L_a},
-    {'id': 5, 'From': 'X1', 'To': 'C7', 'Z_p': Z_pOH1 * L_a},
-    {'id': 6, 'From': 'X1', 'To': 'C8', 'Z_p': Z_pOH1 * L_a},
-    {'id': 7, 'From': 'X1', 'To': 'C9', 'Z_p': Z_pOH1 * L_a},
-    {'id': 8, 'From': 'X1', 'To': 'C10', 'Z_p': Z_pOH1 * L_a},
-    {'id': 9, 'From': 'X1', 'To': 'C11', 'Z_p': Z_pOH1 * L_a},
-    {'id': 10, 'From': 'X1', 'To': 'C12', 'Z_p': Z_pOH1 * L_a},
-    {'id': 11, 'From': 'X1', 'To': 'C13', 'Z_p': Z_pOH1 * L_a},
-    {'id': 12, 'From': 'X1', 'To': 'C14', 'Z_p': Z_pOH1 * L_a},
-    {'id': 13, 'From': 'X1', 'To': 'C15', 'Z_p': Z_pOH1 * L_a},
-    {'id': 14, 'From': 'X1', 'To': 'C16', 'Z_p': Z_pOH1 * L_a},
-    {'id': 15, 'From': 'X1', 'To': 'C17', 'Z_p': Z_pOH1 * L_a},
-    {'id': 16, 'From': 'X1', 'To': 'C18', 'Z_p': Z_pOH1 * L_a},
-    {'id': 17, 'From': 'X1', 'To': 'C19', 'Z_p': Z_pOH1 * L_a},
-    {'id': 18, 'From': 'X1', 'To': 'C20', 'Z_p': Z_pOH1 * L_a},
-    {'id': 19, 'From': 'X1', 'To': 'C21', 'Z_p': Z_pOH1 * L_a},
-    {'id': 20, 'From': 'X1', 'To': 'C22', 'Z_p': Z_pOH1 * L_a},
-    {'id': 21, 'From': 'X1', 'To': 'C23', 'Z_p': Z_pOH1 * L_a},
-    {'id': 22, 'From': 'X1', 'To': 'C24', 'Z_p': Z_pOH1 * L_a},
-    {'id': 23, 'From': 'X1', 'To': 'C25', 'Z_p': Z_pOH1 * L_a},
-    {'id': 24, 'From': 'X1', 'To': 'C26', 'Z_p': Z_pOH1 * L_a},
-    {'id': 25, 'From': 'X1', 'To': 'C27', 'Z_p': Z_pOH1 * L_a},
-    {'id': 26, 'From': 'X1', 'To': 'C28', 'Z_p': Z_pOH1 * L_a},
-    {'id': 27, 'From': 'X1', 'To': 'C29', 'Z_p': Z_pOH1 * L_a},
-    {'id': 28, 'From': 'X1', 'To': 'C30', 'Z_p': Z_pOH1 * L_a},
-    {'id': 29, 'From': 'X1', 'To': 'C31', 'Z_p': Z_pOH1 * L_a},
-    {'id': 30, 'From': 'X1', 'To': 'C32', 'Z_p': Z_pOH1 * L_a},
-    {'id': 31, 'From': 'X1', 'To': 'C33', 'Z_p': Z_pOH1 * L_a},
-    {'id': 32, 'From': 'X1', 'To': 'C34', 'Z_p': Z_pOH1 * L_a},
-    {'id': 33, 'From': 'X1', 'To': 'C35', 'Z_p': Z_pOH1 * L_a},
-    {'id': 34, 'From': 'X1', 'To': 'C36', 'Z_p': Z_pOH1 * L_a},
-    {'id': 35, 'From': 'X1', 'To': 'C37', 'Z_p': Z_pOH1 * L_a},
-    {'id': 36, 'From': 'X1', 'To': 'C38', 'Z_p': Z_pOH1 * L_a}
+    {'id': 0, 'From': 'X1', 'To': 'R1', 'Z_p': Z_pUG1 * L_a},
+    {'id': 1, 'From': 'R1', 'To': 'R2', 'Z_p': Z_pUG1 * L_a},
+    {'id': 2, 'From': 'R2', 'To': 'R3', 'Z_p': Z_pUG1 * L_a},
+    {'id': 3, 'From': 'R3', 'To': 'R4', 'Z_p': Z_pUG1 * L_a},
+    {'id': 4, 'From': 'R4', 'To': 'R5', 'Z_p': Z_pUG1 * L_a},
+    {'id': 5, 'From': 'R5', 'To': 'R6', 'Z_p': Z_pUG1 * L_a},
+    {'id': 6, 'From': 'R6', 'To': 'R7', 'Z_p': Z_pUG1 * L_a},
+    {'id': 7, 'From': 'R7', 'To': 'R8', 'Z_p': Z_pUG1 * L_a},
+    {'id': 8, 'From': 'R8', 'To': 'R9', 'Z_p': Z_pUG1 * L_a},
+    {'id': 9, 'From': 'R9', 'To': 'R10', 'Z_p': Z_pUG1 * L_a},
+    {'id': 10, 'From': 'R3', 'To': 'R11', 'Z_p': Z_pUG1 * L_a},
+    {'id': 11, 'From': 'R4', 'To': 'R12', 'Z_p': Z_pUG1 * L_a},
+    {'id': 12, 'From': 'R12', 'To': 'R13', 'Z_p': Z_pUG1 * L_a},
+    {'id': 13, 'From': 'R13', 'To': 'R14', 'Z_p': Z_pUG1 * L_a},
+    {'id': 14, 'From': 'R14', 'To': 'R15', 'Z_p': Z_pUG1 * L_a},
+    {'id': 15, 'From': 'R6', 'To': 'R16', 'Z_p': Z_pUG1 * L_a},
+    {'id': 16, 'From': 'R9', 'To': 'R17', 'Z_p': Z_pUG1 * L_a},
+    {'id': 17, 'From': 'R10', 'To': 'R18', 'Z_p': Z_pUG1 * L_a},
+    {'id': 18, 'From': 'X1', 'To': 'I2', 'Z_p': Z_pUG2 * L_c},
+    {'id': 19, 'From': 'X1', 'To': 'C2', 'Z_p': Z_pOH1 * L_b},
+    {'id': 20, 'From': 'C2', 'To': 'C3', 'Z_p': Z_pOH1 * L_b},
+    {'id': 21, 'From': 'C3', 'To': 'C4', 'Z_p': Z_pOH1 * L_b},
+    {'id': 22, 'From': 'C4', 'To': 'C5', 'Z_p': Z_pOH1 * L_b},
+    {'id': 23, 'From': 'C5', 'To': 'C6', 'Z_p': Z_pOH1 * L_b},
+    {'id': 24, 'From': 'C6', 'To': 'C7', 'Z_p': Z_pOH1 * L_b},
+    {'id': 25, 'From': 'C7', 'To': 'C8', 'Z_p': Z_pOH1 * L_b},
+    {'id': 26, 'From': 'C8', 'To': 'C9', 'Z_p': Z_pOH1 * L_b},
+    {'id': 27, 'From': 'C3', 'To': 'C10', 'Z_p': Z_pOH2 * L_b},
+    {'id': 28, 'From': 'C10', 'To': 'C11', 'Z_p': Z_pOH2 * L_b},
+    {'id': 29, 'From': 'C11', 'To': 'C12', 'Z_p': Z_pOH2 * L_b},
+    {'id': 30, 'From': 'C11', 'To': 'C13', 'Z_p': Z_pOH2 * L_b},
+    {'id': 31, 'From': 'C10', 'To': 'C14', 'Z_p': Z_pOH2 * L_b},
+    {'id': 32, 'From': 'C5', 'To': 'C15', 'Z_p': Z_pOH2 * L_b},
+    {'id': 33, 'From': 'C15', 'To': 'C16', 'Z_p': Z_pOH2 * L_b},
+    {'id': 34, 'From': 'C15', 'To': 'C17', 'Z_p': Z_pOH3 * L_b},
+    {'id': 35, 'From': 'C16', 'To': 'C18', 'Z_p': Z_pOH3 * L_b},
+    {'id': 36, 'From': 'C8', 'To': 'C19', 'Z_p': Z_pOH3 * L_b},
+    {'id': 37, 'From': 'C9', 'To': 'C20', 'Z_p': Z_pOH3 * L_b}
 ]
 
 # Prosumers
 Pros = [
-    {'id': 0, 'Node': 'C2', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 1, 'Node': 'C3', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 2, 'Node': 'C4', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 3, 'Node': 'C5', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 4, 'Node': 'C6', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 5, 'Node': 'C7', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 6, 'Node': 'C8', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 7, 'Node': 'C9', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 8, 'Node': 'C10', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 9, 'Node': 'C11', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 10, 'Node': 'C12', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 11, 'Node': 'C13', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 12, 'Node': 'C14', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 13, 'Node': 'C15', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 14, 'Node': 'C16', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)}
+    {'id': 0, 'Node': 'R1', 'P': -np.array([(S_R1*0.95)/3]*3), 'Q': -np.array([(S_R1*np.sin(np.arccos(0.95)))/3]*3)},
+    {'id': 1, 'Node': 'R11', 'P': -np.array([(S_R11*0.95)/3]*3), 'Q': -np.array([(S_R11*np.sin(np.arccos(0.95)))/3]*3)},
+    {'id': 2, 'Node': 'R15', 'P': -np.array([(S_R15*0.95)/3]*3), 'Q': -np.array([(S_R15*np.sin(np.arccos(0.95)))/3]*3)},
+    {'id': 3, 'Node': 'R16', 'P': -np.array([(S_R16*0.95)/3]*3), 'Q': -np.array([(S_R16*np.sin(np.arccos(0.95)))/3]*3)},
+    {'id': 4, 'Node': 'R17', 'P': -np.array([(S_R17*0.95)/3]*3), 'Q': -np.array([(S_R17*np.sin(np.arccos(0.95)))/3]*3)},
+    {'id': 5, 'Node': 'R18', 'P': -np.array([(S_R18*0.95)/3]*3), 'Q': -np.array([(S_R18*np.sin(np.arccos(0.95)))/3]*3)},
+    {'id': 6, 'Node': 'I2', 'P': -np.array([(S_I2*0.85)/3]*3), 'Q': -np.array([(S_I2*np.sin(np.arccos(0.85)))/3]*3)},
+    {'id': 7, 'Node': 'C1', 'P': -np.array([(S_C1*0.90)/3]*3), 'Q': -np.array([(S_C1*np.sin(np.arccos(0.90)))/3]*3)},
+    {'id': 8, 'Node': 'C12', 'P': -np.array([(S_C12*0.90)/3]*3), 'Q': -np.array([(S_C12*np.sin(np.arccos(0.90)))/3]*3)},
+    {'id': 9, 'Node': 'C13', 'P': -np.array([(S_C13*0.90)/3]*3), 'Q': -np.array([(S_C13*np.sin(np.arccos(0.90)))/3]*3)},
+    {'id': 10, 'Node': 'C14', 'P': -np.array([(S_C14*0.90)/3]*3), 'Q': -np.array([(S_C14*np.sin(np.arccos(0.90)))/3]*3)},
+    {'id': 11, 'Node': 'C17', 'P': -np.array([(S_C17*0.90)/3]*3), 'Q': -np.array([(S_C17*np.sin(np.arccos(0.90)))/3]*3)},
+    {'id': 12, 'Node': 'C18', 'P': -np.array([(S_C18*0.90)/3]*3), 'Q': -np.array([(S_C18*np.sin(np.arccos(0.90)))/3]*3)},
+    {'id': 13, 'Node': 'C19', 'P': -np.array([(S_C19*0.90)/3]*3), 'Q': -np.array([(S_C19*np.sin(np.arccos(0.90)))/3]*3)},
+    {'id': 14, 'Node': 'C20', 'P': -np.array([(S_C20*0.90)/3]*3), 'Q': -np.array([(S_C20*np.sin(np.arccos(0.90)))/3]*3)}
 ]
 
 
 # Constructing network and solving power flow
 net = lib.grid(Nodes, Lines, Pros)
+
 
 sol, infodict, ier, mesg = net.solve_pf()
 
