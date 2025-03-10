@@ -28,11 +28,39 @@ class grid:
             pros_list.append(prosumer(item['id'], item['Node'], item['P'], item['Q'], nodes))
         return pros_list
 
+    #vector tensión slack y vector vacío de tensiones
+  """ def assign_x(self, x):
+        index = 0
+        r=400/sqrt(3)
+        for node in self.nodes:
+            if node.slack == True:
+                node.U = np.array(complex(r*cos(0),r*sen(0)),complex(r*cos(-np.pi*120/180),r*sen(-np.pi*120/180)),
+                                  complex(r*cos(np.pi*120/180),r*sen(np.pi*120/180)), 0))
+            else: 
+                node.U = np.array([complex(x[index], x[index + 1])]*3)
+                index += 2
+            #ESTO ULTIMO NO ESTOY MUY SEGURA """
+            
+
+    
+    
     def assign_x(self, x):
         index = 0
         for node in self.nodes:
             node.U = complex(x[index], x[index + 1])
             index += 2
+ 
+    #cambiado I linea, pendiente cambiar I inyectada 
+"""    def compute_I(self):
+        for line in self.lines:
+            line.I = np.linalg.solve(line.Z_p,(line.nodes[0].U - line.nodes[1].U))
+        for node in self.nodes: # +: inyeccion, -: demanda
+            
+            node.I = (np.sum([complex(p.P, -p.Q) for p in node.pros])/(node[0].U - node.U[2]) 
+            
+            if len(node.I) >= 4:
+            node.I[3] = -np.sum(node.I[:3])"""
+            
             
     def compute_I(self):
         for line in self.lines:
