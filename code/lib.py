@@ -28,50 +28,46 @@ class grid:
             pros_list.append(prosumer(item['id'], item['Node'], item['P'], item['Q'], nodes))
         return pros_list
 
-    #vector tensión slack y vector vacío de tensiones
-  """ def assign_x(self, x):
+    # vector tensión slack y vector vacío de tensiones
+    def assign_x(self, x):
         index = 0
-        r=400/sqrt(3)
+        r = 400/np.sqrt(3)
         for node in self.nodes:
             if node.slack == True:
-                node.U = np.array(complex(r*cos(0),r*sen(0)),complex(r*cos(-np.pi*120/180),r*sen(-np.pi*120/180)),
-                                  complex(r*cos(np.pi*120/180),r*sen(np.pi*120/180)), 0))
+                node.U = np.array([complex(r*np.cos(0), r*np.sin(0)),
+                                   complex(r*np.cos(-np.pi*120/180), r*np.sin(-np.pi*120/180)),
+                                   complex(r*np.cos(np.pi*120/180), r*np.sin(np.pi*120/180)), 
+                                   0])
             else: 
-                node.U = np.array([complex(x[index], x[index + 1])]*3)
-                index += 2
-            #ESTO ULTIMO NO ESTOY MUY SEGURA """
+                node.U = np.array([complex(x[index + 0], x[index + 1]),
+                                   complex(x[index + 2], x[index + 3]),
+                                   complex(x[index + 4], x[index + 5]),
+                                   complex(x[index + 6], x[index + 7])])
+                index += 8
             
 
     
     
-    def assign_x(self, x):
-        index = 0
-        for node in self.nodes:
-            node.U = complex(x[index], x[index + 1])
-            index += 2
+
  
-    #cambiado I linea, pendiente cambiar I inyectada 
-"""    def compute_I(self):
-        for line in self.lines:
-            line.I = np.linalg.solve(line.Z_p,(line.nodes[0].U - line.nodes[1].U))
-        for node in self.nodes: # +: inyeccion, -: demanda
-            
-            node.I = (np.sum([complex(p.P, -p.Q) for p in node.pros])/(node[0].U - node.U[2]) 
-            
-            if len(node.I) >= 4:
-            node.I[3] = -np.sum(node.I[:3])"""
-            
-            
+    # cambiado I linea, pendiente cambiar I inyectada 
     def compute_I(self):
         for line in self.lines:
-            line.I = (line.nodes[0].U - line.nodes[1].U)/line.Z
+            line.I = line.Y.dot(line.nodes[0].U - line.nodes[1].U)
         for node in self.nodes: # +: inyeccion, -: demanda
-            node.I = np.conj(np.sum([complex(p.P, p.Q) for p in node.pros])/node.U)
+            S_node = np.array([0,0,0], dtype=complex)
+            for p in node.pros:
+                S_node += np.array([complex(item[0], item[1]) for item in zip(p.P, p.Q)])
+            for index in range(3):
+                node.I[index] = np.conjugate((S_node[index])/(node.U[index] - node.U[3]))
+            node.I[3] = -np.sum(node.I[:3])
+            
+            
     
     def compute_res(self):
         residual = []
-        for node in self.nodes:
-            residual.append(node.check())
+        for node in self.nodes[1:]:
+            residual += node.check()
         residual_rx = []
         for item in residual:
             residual_rx.append(np.real(item))
@@ -85,39 +81,55 @@ class grid:
         return res
         
     def solve_pf(self):
-        x0 = [1,0]*len(self.nodes)
+        r = 400/np.sqrt(3)
+        U0 = [r*np.cos(0), 
+              r*np.sin(0),
+              r*np.cos(-np.pi*120/180), 
+              r*np.sin(-np.pi*120/180),
+              r*np.cos(np.pi*120/180), 
+              r*np.sin(np.pi*120/180), 
+              0,
+              0]        
+        x0 = U0*(len(self.nodes) - 1)
         sol, infodict, ier, mesg = fsolve(self.test_x, x0, full_output = True)
         print(mesg)
+        # LLAMADA A NUEVO MÉTODO
+        self.compute_magnitudes()
+        ########################
         return sol, infodict, ier, mesg
+    
+    def compute_magnitudes(self):
+        return None
 
 class node:
     def __init__(self, ref, slack):
         self.ref = ref   
         self.slack = slack        
         self.lines = list()
-        self.U = complex(1, 0)
+        self.U = None
+        self.I = np.array([0, 0, 0, 0], dtype=complex)
         self.pros = []
     
     def check(self):
         if self.slack:
-            residual = self.U - complex(1, 0)
+            return None
         else:
-            I_agregada = 0
+            I_agregada = np.array([0, 0, 0, 0], dtype=complex)
             I_agregada += self.I
             for line in self.lines:
                 if line.nodes[0] == self:
                     I_agregada -= line.I
                 else:
                     I_agregada += line.I
-            residual = I_agregada
-        return residual
+            I_agregada
+        return list(I_agregada)
         
 class line:
     def __init__(self, ref, From, To, Z_p, nodes_list):
         self.ref = ref 
-        self.Z_p = Z_p # Sino guarod Z_p aquí es un argumento del constructor, pero no lo  guardo como atributo de la clase.
-        self.G, self.B = np.real(1/self.Z_p), -np.imag(1/self.Z_p)
-        self.Y = 1/self.Z_p
+        self.Z = Z_p # Sino guarod Z_p aquí es un argumento del constructor, pero no lo  guardo como atributo de la clase.
+        self.Y = np.linalg.inv(Z_p)
+        self.G, self.B = np.real(self.Y), -np.imag(self.Y)
         self.nodes = [next((item for item in nodes_list if item.ref == From), None), 
                       next((item for item in nodes_list if item.ref == To), None)]   
         self.nodes[0].lines.append(self)
