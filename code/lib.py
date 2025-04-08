@@ -95,11 +95,21 @@ class grid:
         print(mesg)
         # LLAMADA A NUEVO MÉTODO
         self.compute_magnitudes()
-        ########################
-        return sol, infodict, ier, mesg
-    
+       
+    #     Umag = self.compute_magnitudes()
+    #     for i, mags in enumerate(Umag):
+    #         print(f"Módulos de tensión nodo {self.nodes[i].ref}:", mags)
+    #     return sol, infodict, ier, mesg
+    # # 
     def compute_magnitudes(self):
-        return None
+        Umag = []
+        for node in self.nodes:
+            magnitudes_node = []
+            for p in node.U:
+                magnitudes_node.append(abs(p)) 
+            Umag.append(magnitudes_node)
+        return Umag
+       
 
 class node:
     def __init__(self, ref, slack):
@@ -145,8 +155,7 @@ class prosumer:
         self.Q = Q  
         self.node = next((item for item in nodes_list if item.ref == node_id), None)
         self.node.pros.append(self)
-        
-        
+    
         
         
         
