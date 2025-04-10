@@ -99,16 +99,17 @@ class grid:
     #     Umag = self.compute_magnitudes()
     #     for i, mags in enumerate(Umag):
     #         print(f"Módulos de tensión nodo {self.nodes[i].ref}:", mags)
-    #     return sol, infodict, ier, mesg
-    # # 
+        return sol, infodict, ier, mesg
+    
     def compute_magnitudes(self):
-        Umag = []
         for node in self.nodes:
             magnitudes_node = []
+            angles_node = []
             for p in node.U:
                 magnitudes_node.append(abs(p)) 
-            Umag.append(magnitudes_node)
-        return Umag
+                angles_node.append(np.angle(p, deg=True)) 
+            node.Umag = magnitudes_node
+            node.Uang = angles_node
        
 
 class node:
