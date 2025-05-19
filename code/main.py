@@ -183,7 +183,15 @@ sol, infodict, ier, mesg = net.solve_pf()
 # for node in net.nodes:
 #     print(node.__dict__)
 
-
+print(net.pros[1].Iang)
+print(net.pros[1].Imagn)
+print(net.lines[12].Imag)
+print(net.lines[12].Iang)
+print(net.nodes[14].Uang)
+print(net.nodes[14].Umag)
+print(net.lines[12].S_in)
+print(net.lines[12].S_out)
+print(net.lines[12].Loss)
 
 
 

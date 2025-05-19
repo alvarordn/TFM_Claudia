@@ -105,11 +105,52 @@ class grid:
         for node in self.nodes:
             magnitudes_node = []
             angles_node = []
+            
             for p in node.U:
                 magnitudes_node.append(abs(p)) 
                 angles_node.append(np.angle(p, deg=True)) 
             node.Umag = magnitudes_node
             node.Uang = angles_node
+        # CÁLCULO DE MÁGNITUDES DE PROSUMER: INTENSIDAD
+        for prosumer in self.pros:
+            magnitudes_pros = []
+            angles_pros = []
+            for i in range(3):
+                I_mag = ((prosumer.P[i] - prosumer.Q[i]*1j)/np.conjugate(prosumer.node.U[i]))
+                magnitudes_pros.append(abs(I_mag)) 
+                angles_pros.append(np.angle(I_mag, deg=True)) 
+            prosumer.Imagn = magnitudes_pros
+            prosumer.Iang = angles_pros
+        # debería de atrubuirse a pros net.pros[0].Imagn
+        # CÁLCULO DE MÁGNITUDES DE LÍNEA: INTENSIDAD DE LÍNEA, flujos de potencia
+        for line in self.lines:
+            magnitudes_line_I = []
+            angles_line_I = []
+            magnitudes_in = []
+            magnitudes_out =[]
+            magnitudes_loss = []
+            
+            for i in range(3):
+                S_in = line.nodes[0].U[i]*np.conjugate(line.I[i])
+                S_out = line.nodes[1].U[i]*np.conjugate(line.I[i])
+                Loss = line.S_in - line.S_out
+                magnitudes_in.append(S_in)
+                magnitudes_out.append(S_out)
+                magnitudes_loss.append(Loss)
+            for p in line.I:
+                magnitudes_line_I.append(abs(p)) 
+                angles_line_I.append(np.angle(p, deg=True)) 
+            
+            line.Imag = magnitudes_line_I
+            line.Iang = angles_line_I
+            line.S_in = magnitudes_in
+            line.S_out = magnitudes_out
+            line.Loss =  magnitudes_loss
+            
+        #CÁLCULO DE LAS PÉRDIDAS TOTALES
+        self.total_losses = sum(line.Loss for line in self.lines)
+            
+                
        
 
 class node:
