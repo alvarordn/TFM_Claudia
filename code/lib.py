@@ -133,7 +133,7 @@ class grid:
             for i in range(3):
                 S_in = line.nodes[0].U[i]*np.conjugate(line.I[i])
                 S_out = line.nodes[1].U[i]*np.conjugate(line.I[i])
-                Loss = line.S_in - line.S_out
+                Loss = S_in - S_out
                 magnitudes_in.append(S_in)
                 magnitudes_out.append(S_out)
                 magnitudes_loss.append(Loss)
@@ -148,7 +148,7 @@ class grid:
             line.Loss =  magnitudes_loss
             
         #CÁLCULO DE LAS PÉRDIDAS TOTALES
-        self.total_losses = sum(line.Loss for line in self.lines)
+        self.total_losses = np.sum(np.array(line.Loss) for line in self.lines)
             
                 
        
