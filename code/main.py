@@ -97,7 +97,14 @@ Lines = [
 
 
 P_head = []
-U_range = []
+U_BAT = []
+U_FC = []
+U_DIESEL = []
+U_HL = []
+U_IL = []
+U_PV = []
+U_WT = []
+
 for p in time[:3599]:
     # Prosumers
     Pros = [
@@ -107,7 +114,7 @@ for p in time[:3599]:
         {'id': 4,  'Node': 'IL', 'P': -np.array([(fdp_IL*IL[p])/3]*3), 'Q': -np.array([(IL[p]*np.sin(np.arccos(fdp_IL)))/3]*3)}, 
         {'id': 5,  'Node': 'HL', 'P': -np.array([(fdp_HL*HL[p])/3]*3), 'Q': -np.array([(HL[p]*np.sin(np.arccos(fdp_HL)))/3]*3)}, 
         {'id': 6,  'Node': 'PV', 'P': np.array([(fdp_PV*PV[p])/3]*3), 'Q': -np.array([(PV[p]*np.sin(np.arccos(fdp_PV)))/3]*3)}, 
-        {'id': 7,  'Node': 'WT', 'P': -np.array([(fdp_WT*WT[p])/3]*3), 'Q': -np.array([(WT[p]*np.sin(np.arccos(fdp_WT)))/3]*3)}]
+        {'id': 7,  'Node': 'WT', 'P': np.array([(fdp_WT*WT[p])/3]*3), 'Q': np.array([(WT[p]*np.sin(np.arccos(fdp_WT)))/3]*3)}]
 
     net = lib.grid(Nodes, Lines, Pros)
 
@@ -120,11 +127,24 @@ for p in time[:3599]:
     S_temp = net.nodes[0].U[0]*np.conj(net.nodes[0].I[0])+net.nodes[1].U[1]*np.conj(net.nodes[1].I[1])+net.nodes[2].U[2]*np.conj(net.nodes[2].I[0])
     
     P_head.append(S_temp.real)
-    
-    U_fases = net.nodes[0].U[:3] 
-    U_range.append(abs(np.mean(np.abs(U_fases))))
 
-print(P_head)
+    U_fBAT = net.nodes[1].U[:3] 
+    U_BAT.append(abs(np.mean(np.abs(U_fBAT))))
+    U_fFC = net.nodes[2].U[:3] 
+    U_FC.append(abs(np.mean(np.abs(U_fFC))))
+    U_fDIESEL = net.nodes[3].U[:3] 
+    U_DIESEL.append(abs(np.mean(np.abs(U_fDIESEL))))
+    U_fIL = net.nodes[4].U[:3] 
+    U_IL.append(abs(np.mean(np.abs(U_fIL))))
+    U_fHL = net.nodes[5].U[:3] 
+    U_HL.append(abs(np.mean(np.abs(U_fHL))))
+    U_fPV = net.nodes[6].U[:3] 
+    U_PV.append(abs(np.mean(np.abs(U_fPV))))
+    U_fWT = net.nodes[7].U[:3] 
+    U_WT.append(abs(np.mean(np.abs(U_fWT))))
+    
+
+
         
 
 # Constructing network and solving power flow
@@ -148,6 +168,30 @@ print(P_head)
 # plt.grid(True)
 # plt.tight_layout()
 # plt.show()
+import matplotlib.pyplot as plt
+tiempo = range(len(time))  # 0 a 3599
+
+plt.figure(figsize=(12, 6))
+
+# # Gráficas
+# plt.plot(tiempo, U_BAT, label='Batería (pu)', color='orange')
+# plt.plot(tiempo, U_PV, label='Fotovoltaica (pu)', color='green')
+# plt.plot(tiempo, U_IL, label='Demanda (pu)', color='red')
+# plt.plot(tiempo, U_HL, label='Demanda térmica (pu)', color='yellow')
+# plt.plot(tiempo, U_FC, label='FC (pu)', color='purple')
+# plt.plot(tiempo, U_DIESEL, label='DIESEL (pu)', color='blue')
+# plt.plot(tiempo, U_WT, label='Eólica (pu)', color='grey')
+
+# # Estilo
+# plt.title('TENSIÓN EN NODOS')
+# plt.xlabel('Tiempo [horas]')
+# plt.ylabel('Tensión [V]')
+# plt.grid(True)
+# plt.legend()
+# plt.tight_layout()
+
+# plt.show()
+
 
 
 
