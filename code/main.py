@@ -104,7 +104,7 @@ U_HL = []
 U_IL = []
 U_PV = []
 U_WT = []
-
+KPI_U = []
 for p in time[:3599]:
     # Prosumers
     Pros = [
@@ -127,21 +127,31 @@ for p in time[:3599]:
     S_temp = net.nodes[0].U[0]*np.conj(net.nodes[0].I[0])+net.nodes[1].U[1]*np.conj(net.nodes[1].I[1])+net.nodes[2].U[2]*np.conj(net.nodes[2].I[0])
     
     P_head.append(S_temp.real)
+    
+    #KPI TENSIÓN 10% (POR FASES)
+    for q in range(len(net.nodes)):
+            for i in range(len(net.nodes[q].U)):
+                if net.nodes[q].U[i]>=(1.1*400/np.sqrt(3)):
+                    KPI_U.append([{'id': net.nodes[q].ref, 'U':net.nodes[q].U[i], '+%':(net.nodes[q].U[i]/(400/np.sqrt(3))*100-100),'Time': p}])
+                else:
+                    if net.nodes[q].U[i]<=0.9*400/np.sqrt(3):
+                        KPI_U.append([{'id': net.nodes[q].ref, 'U':net.nodes[q].U[i], '-%':(100-net.nodes[q].U[i]/(400/np.sqrt(3))*100), 'Time': p}])
 
-    U_fBAT = net.nodes[1].U[:3] 
-    U_BAT.append(abs(np.mean(np.abs(U_fBAT))))
-    U_fFC = net.nodes[2].U[:3] 
-    U_FC.append(abs(np.mean(np.abs(U_fFC))))
-    U_fDIESEL = net.nodes[3].U[:3] 
-    U_DIESEL.append(abs(np.mean(np.abs(U_fDIESEL))))
-    U_fIL = net.nodes[4].U[:3] 
-    U_IL.append(abs(np.mean(np.abs(U_fIL))))
-    U_fHL = net.nodes[5].U[:3] 
-    U_HL.append(abs(np.mean(np.abs(U_fHL))))
-    U_fPV = net.nodes[6].U[:3] 
-    U_PV.append(abs(np.mean(np.abs(U_fPV))))
-    U_fWT = net.nodes[7].U[:3] 
-    U_WT.append(abs(np.mean(np.abs(U_fWT))))
+    # U_fBAT = net.nodes[1].U[:3] 
+    # U_BAT.append(abs(np.mean(np.abs(U_fBAT))))
+    # U_fFC = net.nodes[2].U[:3] 
+    # U_FC.append(abs(np.mean(np.abs(U_fFC))))
+    # U_fDIESEL = net.nodes[3].U[:3] 
+    # U_DIESEL.append(abs(np.mean(np.abs(U_fDIESEL))))
+    # U_fIL = net.nodes[4].U[:3] 
+    # U_IL.append(abs(np.mean(np.abs(U_fIL))))
+    # U_fHL = net.nodes[5].U[:3] 
+    # U_HL.append(abs(np.mean(np.abs(U_fHL))))
+    # U_fPV = net.nodes[6].U[:3] 
+    # U_PV.append(abs(np.mean(np.abs(U_fPV))))
+    # U_fWT = net.nodes[7].U[:3] 
+    # U_WT.append(abs(np.mean(np.abs(U_fWT))))
+    
     
 
 
@@ -191,6 +201,9 @@ plt.figure(figsize=(12, 6))
 # plt.tight_layout()
 
 # plt.show()
+
+
+
 
 
 
