@@ -1,6 +1,7 @@
 # Importing required libraries
 import numpy as np
 import lib
+import scipy.io
 #en desiquilibrado no trabajamos en por unidad
 #Sbase = 1e6
 Ubase = 400 #V
@@ -47,132 +48,106 @@ Z_pUG3 = np.array([
     [0.049 + 0.719j, 0.049 + 0.697j, 0.049 + 0.719j, 0.871 + 0.797j]])
     
 
+S_base = 100000 
+fdp_bat = 1
+fdp_PV = 1
+fdp_WT = 0.99
+fdp_IL = 0.95
+fdp_HL = 1
+fdp_DIESEL = 0.95
+fdp_FC= 0.97
+#PERFILES EN PU
+# Cargar el archivo
+mat = scipy.io.loadmat('Profile_3600_pu.mat')
 
-S_R1=200000 #VA
-S_R11= 15000
-S_R15=52000
-S_R16=55000
-S_R17=35000
-S_R18=47000
+# Extraer la estructura
+profile = mat['Profile_3600_pu']
 
-S_I2=100000
-
-S_C1=120000
-S_C12=20000
-S_C13=20000
-S_C14=25000
-S_C17=25000
-S_C18=8000
-S_C19=16000
-S_C20=8000
-
+# Acceder a los campos (por ejemplo, el campo BAT)
+bat = profile['BAT'][0][0].flatten()*S_base  # 3600 valores
+PV = profile['PV'][0][0].flatten()*S_base
+FC= profile['CHPFC'][0][0].flatten()*S_base
+DIESEL = profile['CHPDIESEL'][0][0].flatten()*S_base
+IL = profile['IL'][0][0].flatten()*S_base
+HL = profile['HL'][0][0].flatten()*S_base
+WT= profile['WT'][0][0].flatten()*S_base
+time= profile['time'][0][0].flatten()
 # Nodes
 Nodes = [
     {'id': 'X1', 'slack': True},
-    {'id': 'R2', 'slack': False},
-    {'id': 'R3', 'slack': False},
-    {'id': 'R4', 'slack': False},
-    {'id': 'R5', 'slack': False},
-    {'id': 'R6', 'slack': False},
-    {'id': 'R7', 'slack': False},
-    {'id': 'R8', 'slack': False},
-    {'id': 'R9', 'slack': False},
-    {'id': 'R10', 'slack': False},
-    {'id': 'R11', 'slack': False},
-    {'id': 'R12', 'slack': False},
-    {'id': 'R13', 'slack': False},
-    {'id': 'R14', 'slack': False},
-    {'id': 'R15', 'slack': False},
-    {'id': 'R16', 'slack': False},
-    {'id': 'R17', 'slack': False},
-    {'id': 'R18', 'slack': False},
-    {'id': 'I2', 'slack': False},
-    {'id': 'C2', 'slack': False},
-    {'id': 'C3', 'slack': False},
-    {'id': 'C4', 'slack': False},
-    {'id': 'C5', 'slack': False},
-    {'id': 'C6', 'slack': False},
-    {'id': 'C7', 'slack': False},
-    {'id': 'C8', 'slack': False},
-    {'id': 'C9', 'slack': False},
-    {'id': 'C10', 'slack': False},
-    {'id': 'C11', 'slack': False},
-    {'id': 'C12', 'slack': False},
-    {'id': 'C13', 'slack': False},
-    {'id': 'C14', 'slack': False},
-    {'id': 'C15', 'slack': False},
-    {'id': 'C16', 'slack': False},
-    {'id': 'C17', 'slack': False},
-    {'id': 'C18', 'slack': False},
-    {'id': 'C19', 'slack': False},
-    {'id': 'C20', 'slack': False}
+    {'id': 'BAT', 'slack': False},
+    {'id': 'FC', 'slack': False},
+    {'id': 'DIESEL', 'slack': False},
+    {'id': 'IL', 'slack': False},
+    {'id': 'HL', 'slack': False},
+    {'id': 'PV', 'slack': False},
+    {'id': 'WT', 'slack': False},
 ]
 
 
 # Lines
 Lines = [
-    {'id': 0, 'From': 'X1', 'To': 'R2', 'Z_p': Z_pUG1 * L_a},
-    {'id': 1, 'From': 'R2', 'To': 'R3', 'Z_p': Z_pUG1 * L_a},
-    {'id': 2, 'From': 'R3', 'To': 'R4', 'Z_p': Z_pUG1 * L_a},
-    {'id': 3, 'From': 'R4', 'To': 'R5', 'Z_p': Z_pUG1 * L_a},
-    {'id': 4, 'From': 'R5', 'To': 'R6', 'Z_p': Z_pUG1 * L_a},
-    {'id': 5, 'From': 'R6', 'To': 'R7', 'Z_p': Z_pUG1 * L_a},
-    {'id': 6, 'From': 'R7', 'To': 'R8', 'Z_p': Z_pUG1 * L_a},
-    {'id': 7, 'From': 'R8', 'To': 'R9', 'Z_p': Z_pUG1 * L_a},
-    {'id': 8, 'From': 'R9', 'To': 'R10', 'Z_p': Z_pUG1 * L_a},
-    {'id': 9, 'From': 'R3', 'To': 'R11', 'Z_p': Z_pUG1 * L_a},
-    {'id': 10, 'From': 'R4', 'To': 'R12', 'Z_p': Z_pUG1 * L_a},
-    {'id': 11, 'From': 'R12', 'To': 'R13', 'Z_p': Z_pUG1 * L_a},
-    {'id': 12, 'From': 'R13', 'To': 'R14', 'Z_p': Z_pUG1 * L_a},
-    {'id': 13, 'From': 'R14', 'To': 'R15', 'Z_p': Z_pUG1 * L_a},
-    {'id': 14, 'From': 'R6', 'To': 'R16', 'Z_p': Z_pUG1 * L_a},
-    {'id': 15, 'From': 'R9', 'To': 'R17', 'Z_p': Z_pUG1 * L_a},
-    {'id': 16, 'From': 'R10', 'To': 'R18', 'Z_p': Z_pUG1 * L_a},
-    {'id': 17, 'From': 'X1', 'To': 'I2', 'Z_p': Z_pUG2 * L_c},
-    {'id': 18, 'From': 'X1', 'To': 'C2', 'Z_p': Z_pOH1 * L_b},
-    {'id': 19, 'From': 'C2', 'To': 'C3', 'Z_p': Z_pOH1 * L_b},
-    {'id': 20, 'From': 'C3', 'To': 'C4', 'Z_p': Z_pOH1 * L_b},
-    {'id': 21, 'From': 'C4', 'To': 'C5', 'Z_p': Z_pOH1 * L_b},
-    {'id': 22, 'From': 'C5', 'To': 'C6', 'Z_p': Z_pOH1 * L_b},
-    {'id': 23, 'From': 'C6', 'To': 'C7', 'Z_p': Z_pOH1 * L_b},
-    {'id': 24, 'From': 'C7', 'To': 'C8', 'Z_p': Z_pOH1 * L_b},
-    {'id': 25, 'From': 'C8', 'To': 'C9', 'Z_p': Z_pOH1 * L_b},
-    {'id': 26, 'From': 'C3', 'To': 'C10', 'Z_p': Z_pOH2 * L_b},
-    {'id': 27, 'From': 'C10', 'To': 'C11', 'Z_p': Z_pOH2 * L_b},
-    {'id': 28, 'From': 'C11', 'To': 'C12', 'Z_p': Z_pOH2 * L_b},
-    {'id': 29, 'From': 'C11', 'To': 'C13', 'Z_p': Z_pOH2 * L_b},
-    {'id': 30, 'From': 'C10', 'To': 'C14', 'Z_p': Z_pOH2 * L_b},
-    {'id': 31, 'From': 'C5', 'To': 'C15', 'Z_p': Z_pOH2 * L_b},
-    {'id': 32, 'From': 'C15', 'To': 'C16', 'Z_p': Z_pOH2 * L_b},
-    {'id': 33, 'From': 'C15', 'To': 'C17', 'Z_p': Z_pOH3 * L_b},
-    {'id': 34, 'From': 'C16', 'To': 'C18', 'Z_p': Z_pOH3 * L_b},
-    {'id': 35, 'From': 'C8', 'To': 'C19', 'Z_p': Z_pOH3 * L_b},
-    {'id': 36, 'From': 'C9', 'To': 'C20', 'Z_p': Z_pOH3 * L_b}
-]
+    {'id': 0, 'From': 'X1', 'To': 'BAT', 'Z_p': Z_pUG1 * L_a},
+    {'id': 1, 'From': 'X1', 'To': 'FC', 'Z_p': Z_pUG1 * L_a},
+    {'id': 2, 'From': 'X1', 'To': 'DIESEL', 'Z_p': Z_pUG1 * L_a},
+    {'id': 3, 'From': 'X1', 'To': 'IL', 'Z_p': Z_pUG1 * L_a},
+    {'id': 4, 'From': 'X1', 'To': 'HL', 'Z_p': Z_pUG1 * L_a},
+    {'id': 5, 'From': 'X1', 'To': 'PV', 'Z_p': Z_pUG1 * L_a},
+    {'id': 6, 'From': 'X1', 'To': 'WT', 'Z_p': Z_pUG1 * L_a}]
 
-# Prosumers
-Pros = [
-    {'id': 0,  'Node': 'R11', 'P': -np.array([(S_R11*0.95)/3]*3), 'Q': -np.array([(S_R11*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 1,  'Node': 'R15', 'P': -np.array([(S_R15*0.95)/3]*3), 'Q': -np.array([(S_R15*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 2,  'Node': 'R16', 'P': -np.array([(S_R16*0.95)/3]*3), 'Q': -np.array([(S_R16*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 3,  'Node': 'R17', 'P': -np.array([(S_R17*0.95)/3]*3), 'Q': -np.array([(S_R17*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 4,  'Node': 'R18', 'P': -np.array([(S_R18*0.95)/3]*3), 'Q': -np.array([(S_R18*np.sin(np.arccos(0.95)))/3]*3)},
-    {'id': 5,  'Node': 'I2',  'P': -np.array([(S_I2*0.85)/3]*3),  'Q': -np.array([(S_I2*np.sin(np.arccos(0.85)))/3]*3)},
-    {'id': 7,  'Node': 'C12', 'P': -np.array([(S_C12*0.90)/3]*3), 'Q': -np.array([(S_C12*np.sin(np.arccos(0.90)))/3]*3)},
-    {'id': 8,  'Node': 'C13', 'P': -np.array([(S_C13*0.90)/3]*3), 'Q': -np.array([(S_C13*np.sin(np.arccos(0.90)))/3]*3)},
-    {'id': 9,  'Node': 'C14', 'P': -np.array([(S_C14*0.90)/3]*3), 'Q': -np.array([(S_C14*np.sin(np.arccos(0.90)))/3]*3)},
-    {'id': 10, 'Node': 'C17', 'P': -np.array([(S_C17*0.90)/3]*3), 'Q': -np.array([(S_C17*np.sin(np.arccos(0.90)))/3]*3)},
-    {'id': 11, 'Node': 'C18', 'P': -np.array([(S_C18*0.90)/3]*3), 'Q': -np.array([(S_C18*np.sin(np.arccos(0.90)))/3]*3)},
-    {'id': 12, 'Node': 'C19', 'P': -np.array([(S_C19*0.90)/3]*3), 'Q': -np.array([(S_C19*np.sin(np.arccos(0.90)))/3]*3)},
-    {'id': 13, 'Node': 'C20', 'P': -np.array([(S_C20*0.90)/3]*3), 'Q': -np.array([(S_C20*np.sin(np.arccos(0.90)))/3]*3)}
-]
 
+P_head = []
+U_BAT = []
+U_FC = []
+U_DIESEL = []
+U_HL = []
+U_IL = []
+U_PV = []
+U_WT = []
+
+for p in time[:3599]:
+    # Prosumers
+    Pros = [
+        {'id': 1,  'Node': 'BAT', 'P': np.array([(fdp_bat*bat[p])/3]*3), 'Q': np.array([(bat[p]*np.sin(np.arccos(fdp_bat)))/3]*3)},
+        {'id': 2,  'Node': 'FC', 'P': np.array([(fdp_FC*FC[p])/3]*3), 'Q': np.array([(FC[p]*np.sin(np.arccos(fdp_FC)))/3]*3)}, 
+        {'id': 3,  'Node': 'DIESEL', 'P': np.array([(fdp_DIESEL*DIESEL[p])/3]*3), 'Q': np.array([(DIESEL[p]*np.sin(np.arccos(fdp_DIESEL)))/3]*3)},
+        {'id': 4,  'Node': 'IL', 'P': -np.array([(fdp_IL*IL[p])/3]*3), 'Q': -np.array([(IL[p]*np.sin(np.arccos(fdp_IL)))/3]*3)}, 
+        {'id': 5,  'Node': 'HL', 'P': -np.array([(fdp_HL*HL[p])/3]*3), 'Q': -np.array([(HL[p]*np.sin(np.arccos(fdp_HL)))/3]*3)}, 
+        {'id': 6,  'Node': 'PV', 'P': np.array([(fdp_PV*PV[p])/3]*3), 'Q': -np.array([(PV[p]*np.sin(np.arccos(fdp_PV)))/3]*3)}, 
+        {'id': 7,  'Node': 'WT', 'P': np.array([(fdp_WT*WT[p])/3]*3), 'Q': np.array([(WT[p]*np.sin(np.arccos(fdp_WT)))/3]*3)}]
+
+    net = lib.grid(Nodes, Lines, Pros)
+
+
+    #sol, infodict, ier, mesg = net.solve_pf()
+
+    sol, _, _, _ = net.solve_pf()  # Ignora infodict, ier y mesg
+
+
+    S_temp = net.nodes[0].U[0]*np.conj(net.nodes[0].I[0])+net.nodes[1].U[1]*np.conj(net.nodes[1].I[1])+net.nodes[2].U[2]*np.conj(net.nodes[2].I[0])
+    
+    P_head.append(S_temp.real)
+
+    U_fBAT = net.nodes[1].U[:3] 
+    U_BAT.append(abs(np.mean(np.abs(U_fBAT))))
+    U_fFC = net.nodes[2].U[:3] 
+    U_FC.append(abs(np.mean(np.abs(U_fFC))))
+    U_fDIESEL = net.nodes[3].U[:3] 
+    U_DIESEL.append(abs(np.mean(np.abs(U_fDIESEL))))
+    U_fIL = net.nodes[4].U[:3] 
+    U_IL.append(abs(np.mean(np.abs(U_fIL))))
+    U_fHL = net.nodes[5].U[:3] 
+    U_HL.append(abs(np.mean(np.abs(U_fHL))))
+    U_fPV = net.nodes[6].U[:3] 
+    U_PV.append(abs(np.mean(np.abs(U_fPV))))
+    U_fWT = net.nodes[7].U[:3] 
+    U_WT.append(abs(np.mean(np.abs(U_fWT))))
+    
+
+
+        
 
 # Constructing network and solving power flow
-net = lib.grid(Nodes, Lines, Pros)
-
-
-sol, infodict, ier, mesg = net.solve_pf()
 
 # Algunos comandos interesantes
 # net.__dict__
@@ -183,15 +158,39 @@ sol, infodict, ier, mesg = net.solve_pf()
 # for node in net.nodes:
 #     print(node.__dict__)
 
-print(net.pros[1].Iang)
-print(net.pros[1].Imagn)
-print(net.lines[12].Imag)
-print(net.lines[12].Iang)
-print(net.nodes[14].Uang)
-print(net.nodes[14].Umag)
-print(net.lines[12].S_in)
-print(net.lines[12].S_out)
-print(net.lines[12].Loss)
+#para graficar la potencia
+# import matplotlib.pyplot as plt
+
+# plt.plot(time, P_range)
+# plt.title("Potencia de cabecera")
+# plt.xlabel("Tiempo")
+# plt.ylabel("Potencia")  # Etiqueta genérica sin unidades
+# plt.grid(True)
+# plt.tight_layout()
+# plt.show()
+import matplotlib.pyplot as plt
+tiempo = range(len(time))  # 0 a 3599
+
+plt.figure(figsize=(12, 6))
+
+# # Gráficas
+# plt.plot(tiempo, U_BAT, label='Batería (pu)', color='orange')
+# plt.plot(tiempo, U_PV, label='Fotovoltaica (pu)', color='green')
+# plt.plot(tiempo, U_IL, label='Demanda (pu)', color='red')
+# plt.plot(tiempo, U_HL, label='Demanda térmica (pu)', color='yellow')
+# plt.plot(tiempo, U_FC, label='FC (pu)', color='purple')
+# plt.plot(tiempo, U_DIESEL, label='DIESEL (pu)', color='blue')
+# plt.plot(tiempo, U_WT, label='Eólica (pu)', color='grey')
+
+# # Estilo
+# plt.title('TENSIÓN EN NODOS')
+# plt.xlabel('Tiempo [horas]')
+# plt.ylabel('Tensión [V]')
+# plt.grid(True)
+# plt.legend()
+# plt.tight_layout()
+
+# plt.show()
 
 
 
