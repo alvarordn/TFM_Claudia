@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 Ubase = 400 #V
 #Zbase = (Ubase**2)/Sbase
 import json
-with open('Claudia.json', 'r') as file:
+with open('Profiles/Claudia.json', 'r') as file:
     data = json.load(file)
 
 
@@ -92,7 +92,7 @@ S_BLOCK_EO= 7000
 S_HOUSE_D=7000 #VA
 S_BLOCK_D= 50000
 S_MARKET_D=90000
-S_INDUSTRY_D=180000
+S_INDUSTRY_D=90000
 S_EV=7000
 
 fdp_EV = 1
@@ -151,17 +151,17 @@ DUCK_CURVE=[]
 
 for i in range(288): 
     if 120 <= i <= 131 or 169 <= i <= 180: 
-        demanda.append(data['Demanda'][i]*(S_HOUSE_D*20+S_BLOCK_D*12+S_INDUSTRY_D+S_MARKET_D)*0.7)
+        demanda.append(data['Demanda'][i]*(S_HOUSE_D*10+S_BLOCK_D*8+S_INDUSTRY_D+S_MARKET_D))
     else: 
         if 132 <= i <= 144:
-            demanda.append(data['Demanda'][i]*(S_HOUSE_D*20+S_BLOCK_D*12+S_INDUSTRY_D+S_MARKET_D)*0.33)
+            demanda.append(data['Demanda'][i]*(S_HOUSE_D*10+S_BLOCK_D*8+S_INDUSTRY_D+S_MARKET_D))
             
         else : 
             if 145 <= i <= 168:
-                demanda.append(data['Demanda'][i]*(S_HOUSE_D*20+S_BLOCK_D*12+S_INDUSTRY_D+S_MARKET_D)*0.50)
+                demanda.append(data['Demanda'][i]*(S_HOUSE_D*10+S_BLOCK_D*8+S_INDUSTRY_D+S_MARKET_D))
              
             else: 
-                demanda.append(data['Demanda'][i]*(S_HOUSE_D*20+S_BLOCK_D*12+S_INDUSTRY_D+S_MARKET_D))
+                demanda.append(data['Demanda'][i]*(S_HOUSE_D*10+S_BLOCK_D*8+S_INDUSTRY_D+S_MARKET_D))
            
             
     pv.append(data['PV'][i]*(S_HOUSE_PV*15+S_BLOCK_PV*5+S_INDUSTRY_PV+S_MARKET_PV))
@@ -174,9 +174,9 @@ tiempo = np.arange(0, 24, 5/60)  # 288 puntos de 5 minutos en 24 horas
 plt.figure(figsize=(12, 6))
 
 # Graficar las series
-plt.plot(tiempo, np.array(demanda)/1000, label='Demanda')
+plt.plot(tiempo, np.array(demanda)/1000, label='Demanda', alpha=0.5)
 plt.plot(tiempo, np.array(DUCK_CURVE)/1000, label='Demanda cubierta por FV')
-plt.plot(tiempo, np.array(pv)/1000, label='PV')
+plt.plot(tiempo, np.array(pv)/1000, label='PV', alpha=0.5)
 
 # Etiquetas y estilo
 plt.xlabel('Hora del día')
@@ -189,19 +189,21 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
+#%%
+
 demanda_pu=[]
 pv_pu=[]
 DUCK_CURVE_pu=[]  
 for i in range(288): 
     if 120 <= i <= 131 or 169 <= i <= 180: 
-        demanda_pu.append(data['Demanda'][i]*0.7)
+        demanda_pu.append(data['Demanda'][i]*1)
     else: 
         if 132 <= i <= 144:
-            demanda_pu.append(data['Demanda'][i]*0.33)
+            demanda_pu.append(data['Demanda'][i]*1)
             
         else : 
             if 145 <= i <= 168:
-                demanda_pu.append(data['Demanda'][i]*0.50)
+                demanda_pu.append(data['Demanda'][i]*1)
              
             else: 
                 demanda_pu.append(data['Demanda'][i])
@@ -350,8 +352,9 @@ for p in range(288):
 
     sol, _, _, _ = net.solve_pf()  # Ignora infodict, ier y mesg
     
-    
-    S_temp = (net.nodes[0].U[0]-net.nodes[0].U[3])*np.conj(net.nodes[0].I[0])+(net.nodes[0].U[1]-net.nodes[0].U[3])*np.conj(net.nodes[0].I[1])+(net.nodes[0].U[2]-net.nodes[0].U[3])*np.conj(net.nodes[0].I[2])
+    # 0, 17, 18
+    I_head = net.lines[0].I + net.lines[17].I + net.lines[18].I    
+    S_temp = (net.nodes[0].U[0]-net.nodes[0].U[3])*np.conj(I_head[0])+(net.nodes[0].U[1]-net.nodes[0].U[3])*np.conj(I_head[1])+(net.nodes[0].U[2]-net.nodes[0].U[3])*np.conj(I_head[2])
     
     P_head.append(abs(S_temp.real))
     

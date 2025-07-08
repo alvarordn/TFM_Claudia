@@ -149,6 +149,8 @@ class grid:
             
         #CÁLCULO DE LAS PÉRDIDAS TOTALES
         self.total_losses = np.sum(np.array(line.Loss) for line in self.lines)
+        
+    
             
                 
        
